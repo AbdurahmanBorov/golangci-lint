@@ -1,0 +1,112 @@
+run:
+  concurrency: 4
+  issues-exit-code: 1
+  tests: true
+  timeout: 5m
+
+linters-settings:
+  errcheck:
+    check-blank: true           # игнорирование ошибки через _
+    check-type-assertions: true # сообщает если type assertion не проверяется на ok
+    
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - performance
+      - style
+  
+  goimports:
+    local-prefixes: "gitlab.com/techdaawah/kitaba-backend"
+  
+  goconst:
+    min-len: 2
+    min: 2
+    min-occurrences: 2
+  
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment          # показывает, сколько можно сэкономить выровняв поля структуры
+  
+  misspell:
+    locale: US
+  
+  nolintlint:
+    require-explanation: true   # Требует, чтобы после //nolint:<linter> шёл комментарий-пояснение (любая непустая строка).
+    require-specific: true      # Запрещает просто //nolint без указания имени линтера.
+  
+  copyloopvar:
+    check-alias: true
+  
+  revive:
+    rules:
+      - name: context-as-argument # ctx первым аргументов
+      - name: context-keys-type   # базовые типы не должные юзатся в качестве ключа
+      - name: cyclomatic          # цикломатическая сложность
+        arguments: [10]
+      - name: datarace            # The rule is able to spot two of such cases: go-routines capturing named return values, and capturing for-range values.
+      - name: duplicated-imports  # дубликат импортов
+      - name: error-return        # By convention, for the sake of readability, variables of type error must be named with the prefix err.
+      - name: error-strings       # By convention, for the sake of readability, variables of type error must be named with the prefix err. Pkg fmt, errors, pkg/errors
+      - name: error-naming        # By convention, for the sake of readability, variables of type error must be named with the prefix err.
+      - name: errorf              # It is possible to get a simpler program by replacing errors.New(fmt.Sprintf()) with fmt.Errorf(). This rule spots that kind of simplification opportunities.
+      - name: if-return           # упрощение if-else
+      - name: var-declaration     # использует только короткую форму объявления переменной :=
+      - name: line-length-limit   # длина строки
+        arguments: [150]
+      - name: waitgroup-by-value  # This rule warns when a sync.WaitGroup expected as a by-value parameter in a function or method.
+      - name: unused-parameter    # показывает неиспользуемые аргументы функции
+  
+  staticcheck:
+    checks: ["all"]
+  
+  rowserrcheck:
+    packages:
+      - github.com/jackc/pgx/v5
+
+
+linters:
+  enable:
+    - asciicheck       # Наличие не-ASCII символов в коде
+    - bidichk          # Появление в коде символов, которые влияют на порядок отображения текста
+    - bodyclose        # закрытие тела HTTP
+    - contextcheck     # использует ли функция неунаследованный контекст.
+    - copyloopvar      # обнаруживает места, где копируются переменные цикла.
+    - dogsled          # Проверяет назначения со слишком большим количеством пустых идентификаторов (например, x, , , _, := f()).
+    - dupl             # показывает дублирование кода
+    - errname          # названия ошибок  по стандарту    ErrBadRequest --> BadRequestError
+    - errorlint        # Рекомендует использовать errors.Is, errors.As вместо ==
+    - forbidigo        # отлавливает выражения(условно которые не хотим видеть в проде)
+    - forcetypeassert  # предупреждает, если приведение типов без ok проверки
+    - goconst          # ищет что можно вынести в константу  -- проверить работает ли
+    - gocritic         # Предоставляет диагностику для выявления ошибок, проблем с производительностью и стилем.
+    - gofmt            # приводит к общепринятому стилю
+    - goimports        # настройка импортов
+    - gosec            # анализ на уязвимости в коде
+    - govet            # анализ кода и выявления потенциальных проблем и ошибок
+    - interfacebloat   # показывает кол-во методов в интерфейсе(можно ограничить)
+    - ineffassign      # показывает, когда изменение переменой не используются дальше
+    - misspell         # ищет ошибки в комментариях
+    - nakedret         # проверяет на голый return в длинной функции ~ 31строка
+    - nestif           # кол-во вложенных if(можно ограничить)
+    - nolintlint       # Сообщает о неправильно сформированных или недостаточных директивах nolint.
+    - predeclared      # ищет затенение встроенных идентификаторов Go(можно добавить исключения)
+    - revive           # Удобная замена. Быстрый, настраиваемый, расширяемый, гибкий и красивый линтер для Go
+    - rowserrcheck     # Проверяет, успешно ли проверено Rows.Err строк.
+    - sqlclosecheck    # Проверяет, закрыты ли sql.Rows, sql.Stmt, sqlx.NamedStmt, pgx.Query.
+    - staticcheck      # набор правил от staticcheck. Нужно настроить
+    - unused           # Проверяет код на наличие неиспользуемых констант, переменных, функций и типов.
+    - unconvert        # поиск лишних конверсий
+    - wastedassign     # Находит ненужные операторы присваивания.
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - bodyclose
+        - forcetypeassert
+        - goconst
+        - dupl
+  include:
+    - EXC0012
+    - EXC0014
